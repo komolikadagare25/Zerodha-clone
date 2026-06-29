@@ -12,7 +12,9 @@ import NotFound from './Landing_page/NotFound';
 import TopNav from './Landing_page/TopNav';
 import Footer from './Landing_page/Footer';
 
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

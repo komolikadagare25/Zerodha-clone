@@ -1,8 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
-
+import { useState } from "react";
+import Signup from "./signup/Signup";
 function TopNav() {
+    const [showSignup, setShowSignup] = useState(false);
+
     return (
+
 
         <nav class="navbar navbar-expand-lg border-bottom p-3" style={{ backgroundColor: '#ffff' }}>
             <div class="container">
@@ -16,13 +20,22 @@ function TopNav() {
 
                     <form class="d-flex" role="search">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                             <li class="nav-item">
-                                <Link class="nav-link active" to='/signup'>Signup</Link>
+                            <li class="nav-item">
+                                <Link
+                                    className="nav-link active"
+                                    to="/"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowSignup(true);
+                                    }}
+                                >
+                                    Signup
+                                </Link>
                             </li>
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <Link class="nav-link active" to='/about'>About</Link>
                             </li>
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <Link class="nav-link active" to='/products'>Products</Link>
                             </li>
                             <li class="nav-item">
@@ -30,11 +43,18 @@ function TopNav() {
                             </li>
                             <li class="nav-item">
                                 <Link class="nav-link active" to='/support'>Support</Link>
-                            </li>  
+                            </li>
                         </ul>
                     </form>
                 </div>
             </div>
+            {
+                showSignup && (
+                    <Signup
+                        onClose={() => setShowSignup(false)}
+                    />
+                )
+            }
         </nav>
 
     );

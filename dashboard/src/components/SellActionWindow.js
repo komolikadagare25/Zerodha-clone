@@ -16,21 +16,36 @@ const SellActionWindow = ({ uid }) => {
     const [balance, setBalance] = useState(0);
 
     const handleSellClick = async () => {
-        try {
-            const res = await axios.post("http://localhost:3002/sell", {
+    try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.post(
+            "http://localhost:3002/api/sell",
+            {
                 name: uid,
                 qty: stockQuantity,
                 price: stockPrice,
-            });
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
-            alert(res.data.message);
-            generalContext.closeSellWindow();
+        alert(res.data.message);
+        generalContext.closeSellWindow();
 
-        } catch (err) {
+    } catch (err) {
+        console.error(err);
+
+        if (err.response) {
             alert(err.response.data.message);
+        } else {
+            alert("Something went wrong. Please try again.");
         }
-    };
-
+    }
+};
     const handleCancelClick = () => {
         generalContext.closeSellWindow();
     };
@@ -38,7 +53,14 @@ const SellActionWindow = ({ uid }) => {
     useEffect(() => {
         const fetchWallet = async () => {
             try {
-                const res = await axios.get("http://localhost:3002/wallet");
+                const token = localStorage.getItem("token");
+
+                const res = await axios.get("http://localhost:3002/api/wallet", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
                 setBalance(res.data.balance);
             } catch (err) {
                 console.log(err);

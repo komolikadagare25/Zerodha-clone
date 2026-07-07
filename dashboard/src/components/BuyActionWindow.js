@@ -15,15 +15,29 @@ const BuyActionWindow = ({ uid }) => {
   const [stockPrice, setStockPrice] = useState(0.0);
   const [balance, setBalance] = useState(0);
 
-  const handleBuyClick = () => {
-    axios.post("http://localhost:3002/buy", {
-      name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
-      mode : "buy",
-    });
+  const handleBuyClick = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    generalContext.closeBuyWindow();
+      await axios.post(
+        "http://localhost:3002/api/buy",
+        {
+          name: uid,
+          qty: stockQuantity,
+          price: stockPrice,
+          mode: "buy",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      generalContext.closeBuyWindow();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleCancelClick = () => {
@@ -31,17 +45,24 @@ const BuyActionWindow = ({ uid }) => {
   };
 
   useEffect(() => {
-  const fetchWallet = async () => {
-    try {
-      const res = await axios.get("http://localhost:3002/wallet");
-      setBalance(res.data.balance);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    const fetchWallet = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  fetchWallet();
-}, []);
+        const res = await axios.get("http://localhost:3002/api/wallet", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setBalance(res.data.balance);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchWallet();
+  }, []);
 
 
   return (
@@ -73,7 +94,7 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons">
-       <span>Available Balance: ₹{balance}</span>
+        <span>Available Balance: ₹{balance}</span>
         <div>
           <Link to="" className="btn btn-blue" onClick={handleBuyClick}>
             Buy

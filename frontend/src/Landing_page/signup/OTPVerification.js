@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 
-const OTPVerification = ({ email, onVerify }) => {
+const OTPVerification = ({ email, onVerify, verifying }) => {
   const [otp, setOtp] = useState("");
+  // const [loading, setLoading] = useState(false);
+
+  const handleVerify = () => {
+    if (otp.length !== 6) {
+      alert("Please enter a valid OTP");
+      return;
+    }
+
+    onVerify(otp);
+  };
 
   return (
     <>
@@ -16,18 +26,21 @@ const OTPVerification = ({ email, onVerify }) => {
         placeholder="Enter 6-digit OTP"
         value={otp}
         maxLength={6}
-        onChange={(e) => setOtp(e.target.value)}
+        onChange={(e) =>
+          setOtp(e.target.value.replace(/\D/g, ""))
+        }
       />
 
       <button
         className="continue-btn"
+        disabled={verifying}
         onClick={() => onVerify(otp)}
       >
-        Verify OTP
+        {verifying ? "Verifying..." : "Verify OTP"}
       </button>
 
       <small>
-        Didn't receive OTP? <a href="/">Resend</a>
+        Didn't receive OTP?
       </small>
     </>
   );

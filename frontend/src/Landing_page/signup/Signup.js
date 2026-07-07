@@ -1,89 +1,175 @@
 import React, { useState, useEffect } from "react";
 import "./signup.css";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 import GoogleLogin from "./GoogleLogin";
 import EmailLogin from "./EmailLogin";
 import OTPVerification from "./OTPVerification";
 
 const Signup = ({ onClose }) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [step, setStep] = useState("email");
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
-    const [email, setEmail] = useState("");
-    const [step, setStep] = useState("email");
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
 
-    useEffect(() => {
-        document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, []);
+  //   const handleContinue = async () => {
+  //   try {
+  //     if (!fullName.trim()) {
+  //       return alert("Please enter your name.");
+  //     }
 
-    const handleContinue = () => {
-        if (!email.trim()) {
-            alert("Please enter your email.");
-            return;
-        }
+  //     if (!email.trim()) {
+  //       return alert("Please enter your email.");
+  //     }
 
+  //     await axios.post("http://localhost:3002/api/auth/send-otp", {
+  //       fullName,
+  //       email,
+  //     });
+
+  //     alert("OTP sent successfully!");
+  //     setStep("otp");
+  //   } catch (err) {
+  //     console.log(err);
+  //     alert(err.response?.data?.message || "Failed to send OTP");
+  //   }
+  // };
+
+  const handleContinue = async () => {
+    if (loading) return;
+
+    if (!fullName.trim()) {
+      toast.error("Please enter your name.");
+      return;
+    }
+
+    if (!email.trim()) {
+      toast.error("Please enter your email.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const toastId = toast.loading("Sending OTP...");
+
+      await axios.post("http://localhost:3002/api/auth/send-otp", {
+        fullName,
+        email,
+      });
+
+      toast.success("OTP sent successfully!", {
+        id: toastId,
+      });
+
+      // Give user time to read the success message
+      setTimeout(() => {
         setStep("otp");
-    };
+      }, 1200);
 
-    const handleOTPVerify = (otp) => {
-        console.log("Email:", email);
-        console.log("OTP:", otp);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to send OTP"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        alert("OTP Verified!");
-    };
+  const handleOTPVerify = async (otp) => {
+    if (verifying) return;
 
-    return (
-        <div className="auth-overlay">
-            <div className="auth-container">
+    try {
+      setVerifying(true);
 
-                {/* LEFT SIDE */}
-                <div className="auth-left">
-                    <div className="brand">
-                        <h1>UrbanTrade</h1>
-                        <p>Trade Smarter. Invest Better.</p>
-                    </div>
+      const toastId = toast.loading("Verifying OTP...");
 
-                    <div className="features">
-                        <div className="feature">📈 Invest with Confidence</div>
-                        <div className="feature">📊 Track Holdings</div>
-                        <div className="feature">💼 Manage Portfolio</div>
-                        <div className="feature">🔒 Secure Authentication</div>
-                    </div>
-                </div>
+      const res = await axios.post(
+        "http://localhost:3002/api/auth/verify-otp",
+        {
+          email,
+          otp,
+        }
+      );
 
-                {/* RIGHT SIDE */}
-                <div className="auth-right">
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-                    <button className="close-btn" onClick={onClose}>
-                        &times;
-                    </button>
+      toast.success("Signup Successful!", {
+        id: toastId,
+      });
 
-                    {step === "email" ? (
-                        <>
-                            <h2>Welcome Back</h2>
+      setTimeout(() => {
+        window.location.href = "http://localhost:3001";
+      }, 1500);
 
-                            <GoogleLogin />
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "OTP verification failed"
+      );
+    } finally {
+      setVerifying(false);
+    }
+  };
+  return (
+    <div className="auth-overlay">
+      <div className="auth-container">
+        <div className="auth-left">
+          <div className="brand">
+            <h1>UrbanTrade</h1>
+            <p>Trade Smarter. Invest Better.</p>
+          </div>
 
-                            <EmailLogin
-                                email={email}
-                                setEmail={setEmail}
-                                onContinue={handleContinue}
-                            />
-                        </>
-                    ) : (
-                        <OTPVerification
-                            email={email}
-                            onVerify={handleOTPVerify}
-                        />
-                    )}
-
-                </div>
-
-            </div>
+          <div className="features">
+            <div className="feature">📈 Invest with Confidence</div>
+            <div className="feature">📊 Track Holdings</div>
+            <div className="feature">💼 Manage Portfolio</div>
+            <div className="feature">🔒 Secure Authentication</div>
+          </div>
         </div>
-    );
+
+        <div className="auth-right">
+          <button className="close-btn" onClick={onClose}>
+            &times;
+          </button>
+
+          {step === "email" ? (
+            <>
+              <h2>Welcome</h2>
+
+              <GoogleLogin />
+
+              <EmailLogin
+                fullName={fullName}
+                setFullName={setFullName}
+                email={email}
+                setEmail={setEmail}
+                onContinue={handleContinue}
+                loading={loading}
+
+              />
+            </>
+          ) : (
+            <OTPVerification
+              email={email}
+              onVerify={handleOTPVerify}
+              verifying={verifying}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Signup;

@@ -8,10 +8,26 @@ const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3002/allHoldings").then((res) => {
-      // console.log(res.data);
-      setAllHoldings(res.data);
-    });
+    const fetchHoldings = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(
+          "http://localhost:3002/api/holdings",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setAllHoldings(res.data);
+      } catch (err) {
+        console.log("Holdings fetch error:", err);
+      }
+    };
+
+    fetchHoldings();
   }, []);
 
   // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
@@ -65,14 +81,14 @@ const Holdings = () => {
             const curValue = stock.price * stock.qty;
             const isProfit = curValue - stock.avg * stock.qty >= 0.0;
             const profClass = isProfit ? "profit" : "loss";
-            const dayClass = stock.isLoss ? "loss" : "profit";
+            const dayClass = stock.day?.includes("-") ? "loss" : "profit";
 
             return (
               <tr key={index}>
                 <td>{stock.name}</td>
                 <td>{stock.qty}</td>
-                <td>{stock.avg.toFixed(2)}</td>
-                <td>{stock.price.toFixed(2)}</td>
+                <td>{stock.avg?.toFixed(2) || 0}</td>
+                <td>{stock.price?.toFixed(2) || 0}</td>
                 <td>{curValue.toFixed(2)}</td>
                 <td className={profClass}>
                   {(curValue - stock.avg * stock.qty).toFixed(2)}

@@ -1,9 +1,12 @@
 import React from "react";
 
 const EmailLogin = ({
+  fullName,
+  setFullName,
   email,
   setEmail,
   onContinue,
+  loading,
 }) => {
   return (
     <>
@@ -14,8 +17,15 @@ const EmailLogin = ({
       </div>
 
       <input
+        type="text"
+        placeholder="Full Name"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
+
+      <input
         type="email"
-        placeholder="Enter your email address"
+        placeholder="Email Address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -23,8 +33,16 @@ const EmailLogin = ({
       <button
         className="continue-btn"
         onClick={onContinue}
+        disabled={loading}
       >
-        Continue
+        {loading ? (
+          <>
+            <span className="spinner"></span>
+            Sending OTP...
+          </>
+        ) : (
+          "Continue"
+        )}
       </button>
     </>
   );

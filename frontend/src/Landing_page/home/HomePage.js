@@ -10,14 +10,14 @@ import Footer from '../Footer';
 function HomePage() {
     return ( 
         <>
-            <TopNav></TopNav>
+            
             <HeroSection></HeroSection>
             <Awards></Awards>
             <Stats></Stats>
             <Pricing></Pricing>
             <Education></Education>
             <OpenAccount></OpenAccount>
-            <Footer></Footer>
+            
         </>
      );
 }

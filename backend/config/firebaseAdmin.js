@@ -1,18 +1,19 @@
 const admin = require("firebase-admin");
-const fs = require("fs");
-const path = require("path");
 
-const serviceAccount = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, "./serviceAccountKey.json"), "utf8")
-);
+if (
+  !process.env.FIREBASE_PROJECT_ID ||
+  !process.env.FIREBASE_CLIENT_EMAIL ||
+  !process.env.FIREBASE_PRIVATE_KEY
+) {
+  throw new Error("Firebase environment variables are missing.");
+}
 
-// SAFE INIT (NO credential.cert dependency)
 admin.initializeApp({
-    credential: admin.credential.cert({
-        projectId: serviceAccount.project_id,
-        clientEmail: serviceAccount.client_email,
-        privateKey: serviceAccount.private_key.replace(/\\n/g, "\n"),
-    }),
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+  }),
 });
 
 module.exports = admin;

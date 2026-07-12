@@ -13,7 +13,7 @@ const Holdings = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "http://localhost:3002/api/holdings",
+          `${process.env.REACT_APP_BACKEND_URL}/api/holdings`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

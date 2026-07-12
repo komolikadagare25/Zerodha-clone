@@ -17,7 +17,7 @@ const Home = () => {
     }
 
       try {
-        await axios.get("http://localhost:3002/api/auth/me", {
+        await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

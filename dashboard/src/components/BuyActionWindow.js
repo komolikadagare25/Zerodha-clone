@@ -20,7 +20,7 @@ const BuyActionWindow = ({ uid }) => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:3002/api/buy",
+        `${process.env.REACT_APP_BACKEND_URL}/api/buy`,
         {
           name: uid,
           qty: stockQuantity,
@@ -49,7 +49,7 @@ const BuyActionWindow = ({ uid }) => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("http://localhost:3002/api/wallet", {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/wallet`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

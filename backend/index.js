@@ -30,27 +30,27 @@ async function main() {
 
 
 
-app.get("/allHoldings", async (req, res) => {
-    let allHoldings = await HoldingsModel.find({});
-    res.json(allHoldings);
-});
+// app.get("/allHoldings", async (req, res) => {
+//     let allHoldings = await HoldingsModel.find({});
+//     res.json(allHoldings);
+// });
 
-app.get("/allPositions", async (req, res) => {
-    let allPositions = await PositionModel.find({});
-    res.json(allPositions);
-});
+// app.get("/allPositions", async (req, res) => {
+//     let allPositions = await PositionModel.find({});
+//     res.json(allPositions);
+// });
 
 
-app.get("/allOrders", async (req, res) => {
-  try {
-    const orders = await OrdersModel.find({}).sort({ _id: -1 });
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
-  }
-});
+// app.get("/allOrders", async (req, res) => {
+//   try {
+//     const orders = await OrdersModel.find({}).sort({ _id: -1 });
+//     res.json(orders);
+//   } catch (err) {
+//     res.status(500).json({
+//       message: err.message,
+//     });
+//   }
+// });
 
 app.listen(PORT, () => {
     console.log("app is running on port 3002");
